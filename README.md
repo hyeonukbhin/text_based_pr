@@ -20,3 +20,13 @@ sudo pip3 install -r requiremets.txt
 test.py
 ```
 
+
+## 4. Downloard personality dataset
+```
+mkdir -p dataset
+curl -L -o ./dataset/mypersonality.csv https://raw.githubusercontent.com/hyeonukbhin/myPersonality-dataset/master/mypersonality.csv
+
+curl -L -o ./dataset/mypersonality.csv https://raw.githubusercontent.com/hyeonukbhin/myPersonality-dataset/master/mypersonality.csv
+
+```
+

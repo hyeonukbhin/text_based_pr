@@ -13,7 +13,9 @@ df_train_docs = read_df("train_docs.csv")
 df_test_docs = read_df("test_docs.csv")
 train_docs = df_train_docs["sentence"].to_list()
 train_docs = [ast.literal_eval(t) for t in train_docs]
+print(train_docs)
 tokens = [t for d in train_docs for t in d]
+
 
 print(tokens[0])
 print(len(tokens))
