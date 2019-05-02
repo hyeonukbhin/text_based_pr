@@ -189,9 +189,19 @@ dm = 1 # {0:dbow, 1:dmpv}
 worker_count = cores  # number of parallel processes
 
 
+import os
+
+
+
+
 import gensim
 # from gensim.models import doc2vec
 # 사전 구축
+
+
+
+
+
 
 model = gensim.models.Doc2Vec(vector_size=300,
                               window=5,
@@ -202,12 +212,27 @@ model = gensim.models.Doc2Vec(vector_size=300,
                               alpha=0.025,
                               min_alpha=0.025,
                               epochs=20,
+                              # dm=1,
                               compute_loss=True)
+
 model.build_vocab(tagged_train_docs)
 model.train(tagged_train_docs, epochs=model.epochs, total_examples=model.corpus_count)
-print(model.running_training_loss)
+# print(model.get_latest_training_loss())
 # print(model.compute_loss)
-print(model.comment)
+# print(model.comment)
+# model.train()
+
+
+# model2 = gensim.models.Word2Vec(size=300,
+#                               window=5,
+#                               seed=1234,
+#                               negative=20,
+#                               min_count=5,
+#                               workers=worker_count,
+#                               alpha=0.025,
+#                               min_alpha=0.025,
+#                               iter=20,
+#                               compute_loss=True)
 
 # print("\nEvaluating %s" % model)
 # err_rate, err_count, test_count, predictor = error_rate_for_model(model, train_docs, test_docs)

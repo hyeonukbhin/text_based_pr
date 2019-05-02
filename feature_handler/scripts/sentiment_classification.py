@@ -223,6 +223,8 @@ for alpha in alphas:
     print(ridge_rmse)
     print(ridge_d2v.score(test_x,test_y))
 
+print("aaaaaaaaaaaaa")
+print(model.docvecs.vector_size)
 
 # d2v_rmse = [(name, cv_rmse(d2v_model, np.array(model.docvecs), train_y, cv=5)) for name, d2v_model in d2v_models]
 # from tabulate import tabulate
