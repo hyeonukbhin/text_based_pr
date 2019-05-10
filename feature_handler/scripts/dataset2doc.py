@@ -7,6 +7,7 @@ from pprintpp import pprint
 import ast
 import re
 import nltk
+import sklearn
 
 '''
 #AUTHID

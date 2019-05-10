@@ -1,7 +1,8 @@
 numpy
-pandas
+pandas==0.22.0
 konlpy
 nltk
 pprintpp
-
-
+python-dateutil
+gensim
+scikit-learn
