@@ -6,3 +6,4 @@ pprintpp
 python-dateutil
 gensim
 scikit-learn
+matplotlib
