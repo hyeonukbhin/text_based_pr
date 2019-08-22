@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 
 import pandas as pd
+from collections import OrderedDict
 
 from collections import namedtuple
 from pprintpp import pprint
@@ -56,7 +57,15 @@ def plot_sklearn(train_x, train_y, model):
 def cv_rmse(model, X, y, cv=5, scoring='neg_mean_squared_error'):
     """ Compute an overall RMSE across all folds of cross validation"""
 
-    return np.sqrt(np.mean(np.multiply(cross_val_score(model, X, y, cv=cv, scoring='neg_mean_squared_error'), -1)))
+    print(cross_val_score(model, X, y, cv=cv, scoring='neg_mean_squared_error'), -1)
+    print(type(cross_val_score(model, X, y, cv=cv, scoring='neg_mean_squared_error')))
+    return np.mean(cross_val_score(model, X, y, cv=cv, scoring='neg_mean_squared_error'))*-1
+    # return np.sqrt(np.mean(np.multiply(cross_val_score(model, X, y, cv=cv, scoring='neg_mean_absolute_error'), -1)))
+
+
+# neg_mean_absolute_error = neg_mean_absolute_error_scorer,
+# neg_mean_squared_error = neg_mean_squared_error_scorer,
+# neg_mean_squared_log_error = neg_mean_squared_log_error_scorer,
 
 def cv_accuracy(name, model, X, y, cv=5):
     """ Compute an overall RMSE across all folds of cross validation"""
@@ -64,6 +73,10 @@ def cv_accuracy(name, model, X, y, cv=5):
     # print(name)
     result = np.mean(cross_val_score(model, X, y, cv=cv))
     # if name is "gbr_d2v" or "gbr_d2v" or "gbr_d2v":
+    #
+    # if (name == "gradient boosting reg.") or (name == "random forest reg.") or (name == "Xboosting reg."):
+    #     result = result*-1
+
     return result
 
 def RMSE(y_true, y_pred):
@@ -102,10 +115,7 @@ def main():
 
     # (float(ast.literal_eval(p_scores)[0]))
     # for p_scores in cv_rating_docs
-    # i= 0
-    # for idx, doctag in sorted(model.docvecs.doctags.items(), key=lambda x: x[1].offset):
-    #     i += 1
-    #     print("sEXT : {}, DocTag : {}, offset : {}".format(train_rating_docs[i][2:5], idx, doctag))
+
 
     # pprint(train_docs[0])
 
@@ -122,6 +132,17 @@ def main():
 
     # 'sEXT', 'sNEU', 'sAGR', 'sCON', 'sOPN'
     cv_ext_docs = [(float(ast.literal_eval(p_scores)[0])) for p_scores in cv_rating_docs]
+    print(cv_ext_docs)
+    cv_ext_docs = list(OrderedDict.fromkeys(cv_ext_docs).keys())
+    print(cv_ext_docs)
+
+
+    i= 0
+    for idx, doctag in sorted(model.docvecs.doctags.items(), key=lambda x: x[1].offset):
+        print("sEXT : {}, DocTag : {}, offset : {}".format(cv_ext_docs[i], idx, doctag))
+        i += 1
+
+
     cv_neu_docs = [(float(ast.literal_eval(p_scores)[1])) for p_scores in cv_rating_docs]
     cv_agr_docs = [(float(ast.literal_eval(p_scores)[2])) for p_scores in cv_rating_docs]
     cv_con_docs = [(float(ast.literal_eval(p_scores)[3])) for p_scores in cv_rating_docs]
@@ -195,7 +216,7 @@ def main():
     d2v_acc = [(name, cv_accuracy(name, reg_model, model.docvecs.vectors_docs, cv_ext_docs, cv=5))
                 for name, reg_model in d2v_models]
 
-    print(tabulate(d2v_acc, floatfmt=".4f", headers=("model", "Accuracy_5cv")))
+    print(tabulate(d2v_acc, floatfmt=".4f", headers=("model", "R-squared_5cv")))
 
 
 
@@ -209,6 +230,7 @@ def main():
                           'train_size': n})
     df = pd.DataFrame(table)
 
+    print(df)
     plt.figure(figsize=(12, 5))
     fig = sns.pointplot(x='train_size', y='RMSE', hue='model',
                         data=df)

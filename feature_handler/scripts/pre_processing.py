@@ -45,6 +45,8 @@ LEARNING_NEG_ALPHA = 0.025
 EPOCHES = 20
 DM = 1 # PVDM if use PVDBOW 사용하려면 0
 
+ext_score_buff = 0
+
 def read_df(filename):
     # df = pd.read_csv(filename, sep=',', na_values=".",index_col=0, encoding = "ISO-8859-1")
     df = pd.read_csv(filename, sep=',', na_values=".", encoding="ISO-8859-1")
@@ -70,7 +72,10 @@ def map_list_type(l, dtype=str):
 
 
 
-def tokenize(df, authid, doc_index):
+# def tokenize(df, authid, doc_index):
+def tokenize(df, authid):
+
+    global ext_score_buff, doc_index
     df_id = df[df['#AUTHID'] == authid]
     status_list = df_id["STATUS"].tolist()
     cleaned_tokens_2d_list = [nltk.word_tokenize(cleanText(sentence)) for sentence in status_list]
@@ -84,12 +89,19 @@ def tokenize(df, authid, doc_index):
     splited_token_list = [term for term in splited_token_list if term not in nlp.Defaults.stop_words]
 
     ext_score = df_id['sEXT'].iloc[0]
+    if ext_score_buff == ext_score:
+        doc_index = doc_index
+    else:
+        doc_index += 1
+    ext_score_buff = ext_score
+
     neu_score = df_id['sNEU'].iloc[0]
     agr_score = df_id['sAGR'].iloc[0]
     con_score = df_id['sCON'].iloc[0]
     opn_score = df_id['sOPN'].iloc[0]
+
     # p_score_list = [ext_score,neu_score,agr_score,con_score,opn_score]
-    doc_name = "Post_{}".format(doc_index)
+    doc_name = "Post_{}".format(doc_index - 1)
 
     # print("p_score list : {}".format(p_score_list))
     return splited_token_list, p_score_list, doc_name
@@ -100,6 +112,7 @@ def save_df(df, filename):
 
 
 def main():
+    global doc_index
     train_df = read_df(DATASET_FILEPATH)
 
     df_comp = train_df[["#AUTHID", 'STATUS', 'sEXT', 'sNEU', 'sAGR', 'sCON', 'sOPN', 'NETWORKSIZE']]
@@ -126,14 +139,22 @@ def main():
 
     print("length of df_comp(droped) : {}".format(len(authid_list)))
 
-    authid_list = list(set(df_comp["#AUTHID"]))
+    # authid_list = list(set(df_comp["#AUTHID"]))
 
     train_authid_list = authid_list[:BOUND_TT]
     test_authid_list = authid_list[BOUND_TT:]
 
-    train_docs = [(tokenize(df_comp, authid, index)) for index, authid in enumerate(train_authid_list)]
-    test_docs = [(tokenize(df_comp, authid, index)) for index, authid in enumerate(test_authid_list)]
-    both_docs = [(tokenize(df_comp, authid, index)) for index, authid in enumerate(authid_list)]
+    # train_docs = [(tokenize(df_comp, authid, index)) for index, authid in enumerate(train_authid_list)]
+    # test_docs = [(tokenize(df_comp, authid, index)) for index, authid in enumerate(test_authid_list)]
+    # both_docs = [(tokenize(df_comp, authid, index)) for index, authid in enumerate(authid_list)]
+
+    doc_index = 0
+    train_docs = [(tokenize(df_comp, authid)) for index, authid in enumerate(train_authid_list)]
+    doc_index = 0
+    test_docs = [(tokenize(df_comp, authid)) for index, authid in enumerate(test_authid_list)]
+    doc_index = 0
+    both_docs = [(tokenize(df_comp, authid)) for index, authid in enumerate(authid_list)]
+
 
     # print(train_docs[0][0][0])
     # pprint(both_docs[:2])

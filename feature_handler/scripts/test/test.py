@@ -41,7 +41,17 @@ data_directory = "/home/kist/Desktop"
 
 review_json_filepath = os.path.join(data_directory, 'review.json')
 doc2vec_filepath = "doc2vec_model_test"
+import numpy as np
+from sklearn.model_selection import KFold, cross_val_score, ShuffleSplit
 
+
+# a = np.array([-3.77649239, -0.97781948, -0.52422557, -1.33490285, -3.98226499], dtype="float64")
+
+a = np.array([-1.5, -.5, -0.5, -0.5, -0.5], dtype="float64")
+
+result = np.sqrt(np.mean(np.multiply(a, -1)))
+
+print(result)
 # X = []
 # with codecs.open(trigram_reviews_filepath, encoding='utf-8') as f:
 #     for review in f:
