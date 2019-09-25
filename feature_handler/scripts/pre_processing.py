@@ -118,8 +118,18 @@ def main():
     df_comp = train_df[["#AUTHID", 'STATUS', 'sEXT', 'sNEU', 'sAGR', 'sCON', 'sOPN', 'NETWORKSIZE']]
     df_comp = df_comp.sort_values(["sEXT"], ascending=[True])
 
+
+    df_ext_low_sample = df_comp[:50]
+    df_ext_high_sample = df_comp[-50:]
+
+    df_ext_sample = df_ext_low_sample.append(df_ext_high_sample)
+    # data = data.append(data_row, ignore_index=True)
+    save_df(df_ext_sample, "df_ext_sample.csv")
+    # print
+
+    print(df_ext_low_sample)
     # print(df_comp)
-    pprint(df_comp[:100])
+    # pprint(df_comp[:100])
 
     # scoure_list = list(set(df_comp["sEXT"]))
     # print("e score list :")
@@ -168,6 +178,7 @@ def main():
 
     df_both = pd.DataFrame(both_docs)
     df_both.columns = ["tokens", "p_score", "Post_index"]
+
 
     save_df(df_train, "train_docs.csv")
     save_df(df_test, "test_docs.csv")

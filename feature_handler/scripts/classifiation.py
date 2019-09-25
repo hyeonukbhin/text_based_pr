@@ -1,8 +1,6 @@
 #-*- coding: utf-8 -*-
-
 import pandas as pd
 from collections import OrderedDict
-
 from collections import namedtuple
 from pprintpp import pprint
 
@@ -101,11 +99,12 @@ def benchmark(model, X, y, n):
     return np.mean(scores)
 
 def main():
+
+    # 모델 가져오기
     model = gensim.models.Doc2Vec.load("personality_doc2vec.model")
 
 
-
-
+    # 데이터 가져오기
     df_train_docs = read_df("train_docs.csv")
     train_sentence_docs = df_train_docs["tokens"].tolist()
     train_rating_docs = df_train_docs["p_score"].tolist()
@@ -132,14 +131,14 @@ def main():
 
     # 'sEXT', 'sNEU', 'sAGR', 'sCON', 'sOPN'
     cv_ext_docs = [(float(ast.literal_eval(p_scores)[0])) for p_scores in cv_rating_docs]
-    print(cv_ext_docs)
+    # print(cv_ext_docs)
     cv_ext_docs = list(OrderedDict.fromkeys(cv_ext_docs).keys())
-    print(cv_ext_docs)
+    # print(cv_ext_docs)
 
 
     i= 0
     for idx, doctag in sorted(model.docvecs.doctags.items(), key=lambda x: x[1].offset):
-        print("sEXT : {}, DocTag : {}, offset : {}".format(cv_ext_docs[i], idx, doctag))
+        # print("sEXT : {}, DocTag : {}, offset : {}".format(cv_ext_docs[i], idx, doctag))
         i += 1
 
 
@@ -182,11 +181,11 @@ def main():
 
 
     train_x = [model.infer_vector(doc.words) for doc in tagged_train_docs]
-    # train_y_binary = [act_fuction(doc.tags) for doc in tagged_train_docs]
+    train_y_binary = [act_fuction(float(doc.tags[0])) for doc in tagged_train_docs]
     train_y = [float(doc.tags[0]) for doc in tagged_train_docs]
 
     test_x = [model.infer_vector(doc.words) for doc in tagged_test_docs]
-    # test_y_binary = [act_fuction(doc.tags) for doc in tagged_test_docs]
+    test_y_binary = [act_fuction(float(doc.tags[0])) for doc in tagged_test_docs]
     test_y = [float(doc.tags[0]) for doc in tagged_test_docs]
 
     lr_d2v = Pipeline([("lr", LinearRegression())])
@@ -230,7 +229,7 @@ def main():
                           'train_size': n})
     df = pd.DataFrame(table)
 
-    print(df)
+    # print(df)
     plt.figure(figsize=(12, 5))
     fig = sns.pointplot(x='train_size', y='RMSE', hue='model',
                         data=df)
@@ -248,11 +247,11 @@ def main():
     # # encoded_train_y = lab_enc.fit_transform(train_y)
     # # encoded_test_y = lab_enc.fit_transform(test_y)
     #
-    # print("====== logistic regression ======")
-    # # classifier = LogisticRegression(random_state=1234)
-    # # classifier.fit(train_x, train_y_binary)
-    # # result = classifier.score(test_x, test_y_binary)
-    # # print(result)
+    print("====== logistic regression ======")
+    classifier = LogisticRegression(random_state=1234)
+    classifier.fit(train_x, train_y_binary)
+    result = classifier.score(test_x, test_y_binary)
+    print(result)
     #
     # # linear regression
     # print("======linear regression======")
