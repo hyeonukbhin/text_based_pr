@@ -5,10 +5,9 @@ abs.
 
 ## 1. Description
 
-- ubuntu 16.04
+- ubuntu 16.04 or later
 - python 3.5
 
-~/.bashrc 에서 PYTHONPATH 2.7 기반으로 물리게 되면 pyyaml import error가 발생함.
 
 ## 2. Requirements
 
@@ -21,7 +20,8 @@ sudo pip3 install -r requiremets.txt
 ## 3. Usage
 
 ```
-test.py
+rosrun feature_handler text_normalizer.py
+rosrun model_interfacer model_interfacer.py 
 ```
 
 

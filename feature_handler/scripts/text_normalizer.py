@@ -12,9 +12,7 @@ import csv
 PACKAGE_PATH = rospkg.RosPack().get_path("feature_handler") + "/scripts/"
 
 def read_df(filename):
-    # df = pd.read_csv(filename, sep=',', na_values=".",index_col=0, encoding = "ISO-8859-1")
     df = pd.read_csv(filename, sep=',', na_values=".", index_col=0, encoding="utf-8")
-    # df = pd.read_csv(filename, sep=',', na_values=".", encoding="ISO-8859-1")
     return df
 
 
@@ -68,9 +66,7 @@ def send_document(name, tokens):
 
 
     json_string = json.dumps(msgs_dict, ensure_ascii=False, indent=4)
-    # json_string = json.dumps(msgs_dict, ensure_ascii=True, indent=4)
     pub_document.publish(json_string)
-    # pub_intent_topic.publish("안녕하세요")
 
     print(tokens)
 
@@ -87,7 +83,6 @@ def callback_translation(data):
     # json_dict = json.loads(data.data.decode('utf-8'))
     json_dict = json.loads(data.data)
     source, target_list, content_list = get_header(json_dict)
-    # 사람 위치 추적 및 이름 파라미터 업데이
     if ("perception" in target_list) and (source == "perception") and ("translation_result" in content_list):
         name = json_dict["translation_result"]["name"]
         speech_kr = json_dict["translation_result"]["speech_kr"]
