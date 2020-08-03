@@ -1,0 +1,3 @@
+[submodule "models/text_based_pr_model_gen"]
+	path = models/text_based_pr_model_gen
+	url = git@github.com:hyeonukbhin/text_based_pr_model_gen.git
