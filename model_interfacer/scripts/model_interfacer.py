@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 import gensim
-from sklearn.externals import joblib
+import sklearn.externals
+import joblib
 import rospy
 from std_msgs.msg import String
 # from pprintpp import pprint

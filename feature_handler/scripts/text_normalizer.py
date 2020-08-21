@@ -8,6 +8,7 @@ from std_msgs.msg import String
 import json
 import rospkg
 import csv
+import spacy
 
 PACKAGE_PATH = rospkg.RosPack().get_path("feature_handler") + "/scripts/"
 
@@ -39,8 +40,7 @@ def tokenize_one_doc(df):
     status_list = df["speech_en"].tolist()
     cleaned_tokens_2d_list = [nltk.word_tokenize(cleanText(sentence)) for sentence in status_list]
     splited_token_list = [t for d in cleaned_tokens_2d_list for t in d]
-    import spacy
-    nlp = spacy.load('en')
+    nlp = spacy.load('en_core_web_sm')
     splited_token_list = [term for term in splited_token_list if term not in nlp.Defaults.stop_words]
     return splited_token_list
 

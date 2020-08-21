@@ -15,6 +15,9 @@ abs.
 sudo apt-get install python3-pyyaml
 sudo apt-get install python3-tk
 sudo pip3 install -r requiremets.txt
+rosrun feature_handler nltk_download.py
+python3 -m spacy download en
+
 ```
 
 ## 3. Usage
