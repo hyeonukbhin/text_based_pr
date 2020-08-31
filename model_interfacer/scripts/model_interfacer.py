@@ -135,13 +135,12 @@ def callback_document(data):
 
         score = personality_model(tokens)
 
-        if len(tokens) < 5:
+        if len(tokens) < 10:
             print_tui([4, 4, 4, 4, 4])
 
         else:
             print_tui(score)
-
-        send_recognition(name, score)
+            send_recognition(name, score)
 
 
 def model_interface():

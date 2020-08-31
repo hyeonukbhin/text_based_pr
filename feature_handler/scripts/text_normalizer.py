@@ -11,7 +11,7 @@ import csv
 import spacy
 
 PACKAGE_PATH = rospkg.RosPack().get_path("feature_handler") + "/scripts/"
-
+DB_INITIATION = False
 def read_df(filename):
     df = pd.read_csv(filename, sep=',', na_values=".", index_col=0, encoding="utf-8")
     return df
@@ -109,12 +109,28 @@ def callback_translation(data):
             send_document(name, tokens)
 
 
+def get_setting_from_launch(arg_name, default_arg):
+
+    try:
+        output = rospy.get_param('~{}'.format(arg_name))
+    except KeyError:
+        output = default_arg
+
+    return output
+
 def text_normalizer():
     global pub_document
     rospy.init_node('KIST_text_normalizer', anonymous=False)
     rospy.Subscriber("translationResult", String, callback_translation)
     pub_document = rospy.Publisher("documentResult", String, queue_size=100)
-
+    # if get_setting_from_launch()
+    db_initiation = get_setting_from_launch("db_initiation", DB_INITIATION)
+    if db_initiation is True:
+        # PACKAGE_PATH = rospkg.RosPack().get_path("feature_handler") + "/scripts/"
+        f = open(PACKAGE_PATH + "data.csv", 'w', encoding='utf-8')
+        wr = csv.writer(f)
+        wr.writerow(["", "name", "speech_en", "speech_kr"])
+        f.close()
     rospy.spin()
 
 
