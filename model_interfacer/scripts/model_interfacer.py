@@ -138,6 +138,7 @@ def callback_document(data):
         score = personality_model(tokens)
 
         min_sentences = get_setting_from_launch("min_sentences", MIN_SENTENCES)
+        print("number_sentences : {}".format(number_sentences))
 
         if int(number_sentences) < int(min_sentences):
             print_tui([4, 4, 4, 4, 4])

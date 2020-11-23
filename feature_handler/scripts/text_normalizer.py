@@ -126,9 +126,6 @@ def callback_translation(data):
             data = data[-max_sentences:].reset_index(drop=True)
             save_df(data, PACKAGE_PATH + "data.csv")
             number_sentences = len(data)
-            print("number of sentences")
-            print(max_sentences)
-
             tokens = tokenize_one_doc(data)
             send_document(name, tokens, number_sentences)
 
