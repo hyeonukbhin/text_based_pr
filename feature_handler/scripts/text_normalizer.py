@@ -12,6 +12,8 @@ import spacy
 
 PACKAGE_PATH = rospkg.RosPack().get_path("feature_handler") + "/scripts/"
 DB_INITIATION = False
+MAX_SENTENCES = 20
+
 def read_df(filename):
     df = pd.read_csv(filename, sep=',', na_values=".", index_col=0, encoding="utf-8")
     return df
@@ -49,7 +51,7 @@ def save_df(df, filename):
     df.to_csv(filename, mode="w", sep=',')
 
 
-def send_document(name, tokens):
+def send_document(name, tokens, number_sentences):
     current_time = rospy.get_rostime()
     msgs_dict = {
         "header": {
@@ -60,7 +62,8 @@ def send_document(name, tokens):
         },
         "document_result": {
             "name": name,
-            "tokens": tokens
+            "tokens": tokens,
+            "number_sentences": number_sentences
         }
     }
 
@@ -81,8 +84,25 @@ def get_header(json_dict):
 
 def callback_translation(data):
     # json_dict = json.loads(data.data.decode('utf-8'))
+    try:
+        db_init_command = rospy.get_param('/pr_db_initiation')
+    except KeyError:
+        db_init_command = False
+        print("Cannot find pr_db_initiation parameter")
+
+    if db_init_command is True:
+        f = open(PACKAGE_PATH + "data.csv", 'w', encoding='utf-8')
+        wr = csv.writer(f)
+        wr.writerow(["", "name", "speech_en", "speech_kr"])
+        f.close()
+        rospy.set_param('pr_db_initiation', False)
+
     json_dict = json.loads(data.data)
     source, target_list, content_list = get_header(json_dict)
+
+
+    max_sentences = get_setting_from_launch("max_sentences", MAX_SENTENCES)
+
     if ("perception" in target_list) and (source == "perception") and ("translation_result" in content_list):
         name = json_dict["translation_result"]["name"]
         speech_kr = json_dict["translation_result"]["speech_kr"]
@@ -102,11 +122,15 @@ def callback_translation(data):
 
             data_row = pd.Series([name, speech_kr, speech_en], index=["name", "speech_kr", "speech_en"])
             data = data.append(data_row, ignore_index=True)
-            data = data[-20:].reset_index(drop=True)
+
+            data = data[-max_sentences:].reset_index(drop=True)
             save_df(data, PACKAGE_PATH + "data.csv")
+            number_sentences = len(data)
+            print("number of sentences")
+            print(max_sentences)
 
             tokens = tokenize_one_doc(data)
-            send_document(name, tokens)
+            send_document(name, tokens, number_sentences)
 
 
 def get_setting_from_launch(arg_name, default_arg):
@@ -125,6 +149,9 @@ def text_normalizer():
     pub_document = rospy.Publisher("documentResult", String, queue_size=100)
     # if get_setting_from_launch()
     db_initiation = get_setting_from_launch("db_initiation", DB_INITIATION)
+
+    rospy.set_param('/pr_db_initiation', False)
+
     if db_initiation is True:
         # PACKAGE_PATH = rospkg.RosPack().get_path("feature_handler") + "/scripts/"
         f = open(PACKAGE_PATH + "data.csv", 'w', encoding='utf-8')

@@ -12,6 +12,7 @@ import rospkg
 
 PACKAGE_PATH = rospkg.RosPack().get_path("model_interfacer")
 MODEL_FILEPATH = PACKAGE_PATH + "/scripts/models/"
+MIN_SENTENCES = 10
 
 def read_df(filename):
     df = pd.read_csv(filename, sep=',', na_values=".", index_col=0)
@@ -132,16 +133,27 @@ def callback_document(data):
 
         name = json_dict["document_result"]["name"]
         tokens = json_dict["document_result"]["tokens"]
+        number_sentences = json_dict["document_result"]["number_sentences"]
 
         score = personality_model(tokens)
 
-        if len(tokens) < 10:
+        min_sentences = get_setting_from_launch("min_sentences", MIN_SENTENCES)
+
+        if int(number_sentences) < int(min_sentences):
             print_tui([4, 4, 4, 4, 4])
 
         else:
             print_tui(score)
             send_recognition(name, score)
 
+def get_setting_from_launch(arg_name, default_arg):
+
+    try:
+        output = rospy.get_param('~{}'.format(arg_name))
+    except KeyError:
+        output = default_arg
+
+    return output
 
 def model_interface():
     global pub_recognition
