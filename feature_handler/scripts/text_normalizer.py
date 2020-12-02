@@ -30,7 +30,7 @@ def drop_under_N_sentence(df, authid_list, drop_n):
 
 def cleanText(readData):
     # 텍스트에 포함되어 있는 특수 문자 제거
-    text = re.sub('[-=+,#/\?:^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]', '', readData)
+    text = re.sub('[-=+,#/\?:;^$.@*\"※~&%ㆍ!』\\‘|\(\)\[\]\<\>`\'…》]', '', readData)
     return text
 
 
