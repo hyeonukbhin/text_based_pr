@@ -3,3 +3,4 @@
 
 import nltk
 nltk.download("punkt")
+nltk.download("en_core_web_sm")
